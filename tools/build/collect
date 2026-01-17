@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -e
+
+# Copy static PDFs from the electronics dirs in the src tree to the generated tree
+
+# Figure out the path for the directories
+scriptDir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+rootDir=$scriptDir/../..
+docsDir=${rootDir}/generated/docs
+mdDir=${rootDir}/generated/md
+productsDir=src/products
+
+# Copy all PDFs in the product tree.
+find ${productsDir} -type f -name "*.pdf" | while read fname
+do
+  # Take the path "src/products/my-product/electronics/some-file-rev-c.pdf" and extract "my-product"
+  tmp=${fname%/electronics/*.pdf}
+  tmp=${tmp#src/products/}
+  # Replace - with _ ("my-product" -> "my_product")
+  product=${tmp//-/_}
+
+  # Take the path "src/products/my-product/electronics/some-file-rev-c.pdf" and extract "some-file-rev-c.pdf"
+  tmp=${fname%/*.pdf}
+  fileName=${fname#${tmp}/}
+  destination=${docsDir}/${product}
+  echo "Copy ${fname} to ${destination}"
+  mkdir -p ${destination}
+  cp ${fname} ${destination}/.
+done
+
+# Copy all product source files, to be used on the web to generate product pages
+find src/products -type d -name "datasheet" | while read dname
+do
+  # dname will contain something like "src/products/sd-card-deck/datasheet", extract the "sd-card-deck" part and covert to "sd_card_deck"
+  tmp=${dname%/datasheet}
+  tmp=${tmp#src/products/}
+  product=${tmp//-/_}
+  destination=${mdDir}/${product}
+
+  mkdir -p ${destination}
+  echo "Copy ${dname}/* to ${destination}"
+  cp ${dname}/* ${destination}
+done

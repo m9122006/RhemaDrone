@@ -1,0 +1,16 @@
+name: Datasheets
+
+source: src
+destination: generated/html
+url: /module/generated/html
+
+liquid:
+  error_mode: strict
+  strict_variables: true
+  strict_filters: true
+
+exclude: ['*.pdf', 'src/assets/html/*']
+
+sass:
+  sass_dir: _scss
+  style: compressed

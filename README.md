@@ -1,38 +1,92 @@
-# Crazyflie Firmware  [![CI](https://github.com/bitcraze/crazyflie-firmware/workflows/CI/badge.svg)](https://github.com/bitcraze/crazyflie-firmware/actions?query=workflow%3ACI)
+# Hardware documentation and design
 
-This project contains the source code for the firmware used in the Crazyflie range of platforms, including the Crazyflie 2.x and the Roadrunner.
+This repository hold hardware documentation and design.
 
-### Crazyflie 1.0 support
+## Product datasheets
 
-The 2017.06 release was the last release with Crazyflie 1.0 support. If you want
-to play with the Crazyflie 1.0 and modify the code, please clone this repo and
-branch off from the 2017.06 tag.
+The product datasheets are written in markdown and generated
+to HTML by Jekyll and to PDF by wkhtmltopdf. It uses bootstrap
+for layout of the HTML and liquid tags to help with the content
+generation.
 
-## Building and Flashing
-See the [building and flashing instructions](https://github.com/bitcraze/crazyflie-firmware/blob/master/docs/building-and-flashing/build.md) in the github docs folder.
+### Writing
 
+Each datasheets needs to contain the following:
 
-## Official Documentation
+* Front Matter variables
+* Ingress (with image)
+* Datasheet history
 
-Check out the [Bitcraze crazyflie-firmware documentation](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/) on our website.
+#### Front Matter variables
 
-## Generated documentation
+Each datahseet has a number of attributs set in FrontMatter for datasheet:
 
-The easiest way to generate the API documentation is to use the [toolbelt](https://github.com/bitcraze/toolbelt)
+| Name | Values | Description |
+| ---- | ------ | ----------- |
+| layout | datasheet-base | Selects the layout, there is only one |
+| title | | Name of the product |
+| sku | | The product SKU |
+| version | | The version of the datasheet
+| status | early-access / active / eol | The product life cycle status |
 
-```tb build-docs```
+#### Liquid tags
 
-and to view it in a web page
+There's a number of liquid tags to make things easier and keep formatting
+consisent, they are listed below.
 
-```tb docs```
+##### Datasheet intro
 
-## Contribute
-Go to the [contribute page](https://www.bitcraze.io/contribute/) on our website to learn more.
+Used to create the ingress and image at the start of the datasheet. The
+tag takes one argument, the image.
 
-### Test code for contribution
+```liquid
+{% datasheet_intro my-fancy-image-jpg; %}
+This is the ingress for the datahseet right here!
+{% enddatasheet_intro %}
+```
 
-To run the tests please have a look at the [unit test documentation](https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/development/unit_testing/).
+Note: The image should be located in the same folder as the markdown file. A full path
+will not work when generating product pages on the web from the markdown.
 
-## License
+##### Inserting images
 
-The code is licensed under LGPL-3.0
+This tag is used to insert images and takes three arguments:
+
+* Name of image
+* Size of image: small, medium, large
+* Alignment of image: center
+
+```liquid
+{% datasheet_img My Fancy image; medium; center; my-fancy-image.png; %}
+```
+
+Note: The image should be located in the same folder as the markdown file. A full path
+will not work when generating product pages on the web from the markdown.
+
+##### Notice
+
+This tag is used to insert a notice and takes one arguments:
+
+* Type: warning (yellow background), success (green background),
+danger (red background)
+
+```liquid
+{% datasheet_notice warning; %}
+You have been warned!
+{% enddatasheet_notice %}
+```
+
+### Generating
+
+You need the [toolbelt](https://github.com/bitcraze/toolbelt) to generate the
+datasheets.
+
+The generation is done using the following command:
+
+```text
+$ tb generate [datasheet]
+
+  datasheet - Optional directory name of datasheet for generating
+              only one datasheet. If this is not specified all the
+              datasheets are generated.
+```
